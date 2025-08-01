@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The SUPER Annoying Website</title>
+    <style>
+        /* CSS to make the website visually chaotic and irritating */
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            margin: 0;
+            overflow: hidden; /* Prevent scrolling, which would make the moving button easier to find */
+            text-align: center;
+            background: linear-gradient(135deg, #ff00ff, #00ffff, #ffff00);
+            background-size: 400% 400%;
+            animation: gradient-pulse 5s ease infinite, color-shift 2s infinite alternate;
+            cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewport='0 0 32 32' style='fill:black'><path d='M16 0c-8.837 0-16 7.163-16 16s7.163 16 16 16 16-7.163 16-16-7.163-16-16-16zm-4.735 24.364l-4.265-4.265-4.265 4.265-2.265-2.265 4.265-4.265-4.265-4.265 2.265-2.265 4.265 4.265 4.265-4.265 2.265 2.265-4.265 4.265 4.265 4.265-2.265 2.265z'/></svg>") 16 16, auto;
+        }
+
+        @keyframes gradient-pulse {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes color-shift {
+            0%   { color: #ff0000; transform: skew(0deg); }
+            25%  { color: #ff9900; transform: skew(3deg); }
+            50%  { color: #ffff00; transform: skew(-3deg); }
+            75%  { color: #00ff00; transform: skew(3deg); }
+            100% { color: #0000ff; transform: skew(0deg); }
+        }
+
+        h1, p {
+            position: relative;
+            z-index: 10;
+            animation: color-shift 2s infinite alternate; /* Applies the color shift animation to text */
+        }
+        
+        h1 {
+            font-size: clamp(1.5rem, 6vw, 3em); /* Fluid font size for h1 */
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+            margin-top: 10vh; /* Keeps the heading from being too high */
+        }
+
+        p {
+            font-size: clamp(1rem, 3vw, 1.5em); /* Fluid font size for p */
+        }
+
+        #annoyance-button {
+            position: absolute;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            z-index: 100;
+            user-select: none;
+            transition: transform 0.1s ease-in-out;
+            width: clamp(120px, 30vw, 150px);
+            height: clamp(40px, 10vw, 50px);
+            padding: clamp(8px, 2vw, 10px) clamp(16px, 4vw, 20px);
+            font-size: clamp(0.8rem, 2.5vw, 1.2em);
+            background-color: #ff4d4d; /* Bright red */
+            color: white;
+            border: 3px solid #cc0000;
+        }
+
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: clamp(15px, 4vw, 20px);
+            background-color: #ffc266;
+            border: 5px solid #ff9900;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+            font-size: clamp(1rem, 4vw, 1.5em);
+            font-weight: bold;
+            display: none;
+            z-index: 150;
+            user-select: none;
+        }
+
+        .emoji {
+            position: absolute;
+            top: 0;
+            left: 0;
+            font-size: clamp(1.5rem, 5vw, 2em);
+            animation: fall 10s linear infinite;
+        }
+
+        @keyframes fall {
+            from { transform: translateY(-100px); opacity: 1; }
+            to { transform: translateY(100vh); opacity: 0; }
+        }
+
+    </style>
+</head>
+<body>
+    <h1>Welcome to a Totally Normal Website!</h1>
+    <p>We're so glad you're here. Everything is going to be fine. Just fine.</p>
+
+    <button id="annoyance-button">Stop the Annoyance</button>
+    
+    <div id="popup-message" class="popup">
+        Everything is OK!
+    </div>
+
+    <script>
+        // JavaScript for all the super annoying behavior
+        document.addEventListener('DOMContentLoaded', () => {
+            const button = document.getElementById('annoyance-button');
+            const popup = document.getElementById('popup-message');
+
+            const annoyanceTexts = [
+                "Stop it", "Don't Click Me", "Go Away", "Why are you here?", "Help!", "Try Again"
+            ];
+            const emojis = ['😂', '😫', '😡', '🤯', '😭', '🤯'];
+
+            // --- Annoying Sound Logic (Web Audio API) ---
+            let audioContext;
+            let gainNode;
+            let beepInterval;
+
+            const startAudioContext = () => {
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    gainNode = audioContext.createGain();
+                    gainNode.gain.value = 0.05; // Set a low volume
+                    gainNode.connect(audioContext.destination);
+                }
+            };
+            
+            // This function creates a single beep
+            const createBeep = (freq, duration) => {
+                const oscillator = audioContext.createOscillator();
+                oscillator.type = 'sawtooth';
+                oscillator.frequency.value = freq;
+                oscillator.connect(gainNode);
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + duration);
+            };
+
+            // Start the beeps after the first user interaction
+            const startInteraction = () => {
+                startAudioContext();
+                if (!beepInterval) {
+                    beepInterval = setInterval(() => {
+                        const freq = 440 + Math.random() * 880; // Random frequency
+                        const duration = 0.1 + Math.random() * 0.2; // Random duration
+                        createBeep(freq, duration);
+                    }, 500); // New beep every half-second
+                }
+                document.removeEventListener('click', startInteraction);
+                document.removeEventListener('touchstart', startInteraction);
+            };
+
+            // Add event listeners for both mouse and touch
+            document.addEventListener('click', startInteraction, { once: true });
+            document.addEventListener('touchstart', startInteraction, { once: true });
+
+            // Add a sound on mouse/touch movement
+            const handleMoveSound = () => {
+                startAudioContext();
+                const freq = 200 + Math.random() * 100;
+                const duration = 0.05;
+                createBeep(freq, duration);
+            };
+            document.addEventListener('mousemove', handleMoveSound);
+            document.addEventListener('touchmove', handleMoveSound);
+
+
+            // --- Moving Button Logic ---
+            const moveButton = () => {
+                const maxX = window.innerWidth - button.offsetWidth;
+                const maxY = window.innerHeight - button.offsetHeight;
+                
+                const newX = Math.random() * maxX;
+                const newY = Math.random() * maxY;
+
+                button.style.left = `${newX}px`;
+                button.style.top = `${newY}px`;
+
+                // Change button text randomly
+                const randomIndex = Math.floor(Math.random() * annoyanceTexts.length);
+                button.textContent = annoyanceTexts[randomIndex];
+            };
+
+            setInterval(moveButton, 300); // Move the button even faster now
+
+            // --- Flashing Pop-up Logic ---
+            const showPopup = () => {
+                popup.style.display = 'block';
+                // Hide it after a short delay
+                setTimeout(() => {
+                    popup.style.display = 'none';
+                }, 1000);
+            };
+
+            setInterval(showPopup, 3000); // Show the pop-up every 3 seconds
+
+            // --- The Ultimate Annoyance Logic (reloads page with a delay) ---
+            const handleAnnoyanceStop = () => {
+                button.textContent = "Loading...";
+                button.style.backgroundColor = '#666';
+                button.style.cursor = 'not-allowed';
+                clearInterval(beepInterval);
+                document.removeEventListener('mousemove', handleMoveSound);
+                document.removeEventListener('touchmove', handleMoveSound);
+                
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000); // Add a 2-second delay to build false hope
+            }
+            button.addEventListener('click', handleAnnoyanceStop);
+            button.addEventListener('touchstart', handleAnnoyanceStop);
+
+
+            // --- Annoying Emoji Rain Logic ---
+            const createEmoji = () => {
+                const emojiElement = document.createElement('span');
+                emojiElement.classList.add('emoji');
+                const randomIndex = Math.floor(Math.random() * emojis.length);
+                emojiElement.textContent = emojis[randomIndex];
+                emojiElement.style.left = `${Math.random() * 100}vw`;
+                emojiElement.style.animationDelay = `-${Math.random() * 10}s`; // Stagger the start times
+                document.body.appendChild(emojiElement);
+
+                // Remove emoji after animation to prevent memory leaks
+                emojiElement.addEventListener('animationend', () => {
+                    emojiElement.remove();
+                });
+            };
+
+            setInterval(createEmoji, 200); // New emoji every 0.2 seconds
+        });
+    </script>
+</body>
+</html>
